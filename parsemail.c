@@ -1,3 +1,10 @@
+/**********************************************************************
+ Copyright: HQYJ
+ Author: yeoman
+ Date: 2021-01-12
+ Description: 邮件检索，提取主题字并转存
+ *********************************************************************/
+
 #include "parsemail.h"
 
 int verusername(const char * username, struct table *usertable)

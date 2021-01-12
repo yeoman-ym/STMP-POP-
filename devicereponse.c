@@ -1,3 +1,10 @@
+/**********************************************************************
+ Copyright: HQYJ
+ Author: yeoman
+ Date: 2021-01-12
+ Description: 设备控制结果，邮件响应
+ *********************************************************************/
+
 #include "devicereponse.h"
 
 int sendemail(int cfd, const struct mail *pmail, const struct subject_ctl *subject)

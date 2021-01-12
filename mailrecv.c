@@ -1,3 +1,10 @@
+/**********************************************************************
+ Copyright: HQYJ
+ Author: yeoman
+ Date: 2021-01-12
+ Description: SMTP通讯过程，邮件接收，存储；关键信息提取
+ *********************************************************************/
+
 #include "mailrecv.h"
 
 int getusername(int sockfd, struct table *pmail)            //SMTP

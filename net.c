@@ -1,3 +1,10 @@
+/**********************************************************************
+ Copyright: HQYJ
+ Author: yeoman
+ Date: 2021-01-12
+ Description: 建立网络连接的套接字
+ *********************************************************************/
+
 #include "net.h"
 
 int handleconnection(int sockfd, struct mail *pmail)                      //SMTP锁步

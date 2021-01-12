@@ -1,3 +1,10 @@
+/**********************************************************************
+ Copyright: HQYJ
+ Author: yeoman
+ Date: 2021-01-12
+ Description: 根据主题字完成设备控制及应用程序更新
+ *********************************************************************/
+
 #include "devicecontrol.h"
 
 int subjectcontrol(const struct mail *pmail, struct subject_ctl *subject)
