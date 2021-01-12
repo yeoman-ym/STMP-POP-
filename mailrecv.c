@@ -57,21 +57,21 @@ int getFromAddress(int sockfd, struct mail *pmail)
     //读取数据存入buf中
     read(sockfd, buf, sizeof(buf)-1);
     //从buf中查找<> 中间的数据，找到后就是发送方的地址，作为回复邮件的接收方地址
-    char *start = strstr(buf, '<');
+    char *start = strstr(buf, "<");
     if(NULL == start)
     {
         perror("index error");
         return -1;
     }
 
-    char *end = strstr(start+1, '>');
+    char *end = strstr(start+1, ">");
     if(NULL == end)
     {
         perror("index error");
         return -1;
     }
 
-    int count = end - start + 1;
+    int count = end - start - 1;
     char temp[128] = "";
     strncpy(temp, start+1, count);
     strcpy(pmail->send, temp);
@@ -84,21 +84,21 @@ int getToAddress(int sockfd, struct mail *pmail)
     char buf[128] = "";
     read(sockfd, buf, sizeof(buf)-1);
     //从buf中查找<> 中间的数据，找到后就是发送方的地址，作为回复邮件的接收方地址
-    char *start = strstr(buf, '<');
+    char *start = strstr(buf, "<");
     if(NULL == start)
     {
         perror("index error");
         return -1;
     }
 
-    char *end = strstr(start+1, '>');
+    char *end = strstr(start+1, ">");
     if(NULL == end)
     {
         perror("index error");
         return -1;
     }
 
-    int count = end - start + 1;
+    int count = end - start - 1;
     char temp[128] = "";
     strncpy(temp, start+1, count);
     strcpy(pmail->recv, temp);
@@ -129,13 +129,12 @@ int getbody(int sockfd, struct mail *pmail)
     }
     else
     {
-        char *end = strstr(start, "\r\n\r\n");
-        int len = end - start + 1;
+        char *end = strstr(start, "-----");
+        int len = end - start - 24;
         //将附件内容复制给邮件结构体
-        strncpy(pmail->atta, start, len);
+        strncpy(pmail->atta, start + 24, len);
     }
 
-    //邮件主体内容不明确
     if(strstr(buf,"\t\n.\r\n") == NULL)
     {
         read(sockfd, buf, sizeof(buf));
@@ -143,7 +142,6 @@ int getbody(int sockfd, struct mail *pmail)
     return 0;
 }
 
-//附件内容与文档叙述不符
 int getslave (int sockfd, struct mail *pmail)
 {
     char buf[MAX_ATTA] = "";
@@ -158,37 +156,120 @@ int getslave (int sockfd, struct mail *pmail)
     }
 
     //附件结束位置
-    char *end = strstr(start, "\r\n\r\n");
+    char *end = strstr(start, "\r\n.\r\n");
     if(NULL == end)
     {
         perror("find end error");
         return -1;
     }
 
+    int len = end - start -24;
+    strncpy(pmail->atta, start+24, len);
+    strcpy(pmail->atta, buf + 24);
+
+    if(strstr(buf, "\r\n.\r\n") == NULL)
+        read(sockfd, buf, sizeof(buf));
     return 0;
 }
 
-int getuser_pop(int sockfd, struct table *p)           //POP3
+int getuser_pop(int sockfd, struct table *pmail)           //POP3
 {
     //参数判断
+    if(sockfd < 3 || NULL == pmail)
+    {
+        perror("getuser_pop error");
+        return -1;
+    }
+
     //从sockfd接收数据，存入buf
+    char buf[128] = "";
+    int len = read(sockfd, buf, sizeof(buf)-1);
+
     //判断接收到的数据是否为空，无数据继续接收，不为空就继续下面步骤
+    while(len < 1)
+    {
+        len = read(sockfd, buf, sizeof(buf)-1);
+    }
+    buf[len-2] = 0;
+
+    //将接收到的buf解码
+    char *str = base64_decode(buf);
     //查找USER之后的用户名存入str
+    char *start = strstr(str, "USER");
+    char username[10] = "";
+    if(NULL == start)
+    {
+        perror("getusername error");
+        return -1;
+    }
+    else
+    {
+        char *end = strstr(start+1, "\r\n");
+        //将用户名存入username
+        int lenname = end - start - 1;
+        strncpy(username, start+1, lenname);
+    }
+
     //进行用户名验证
-    //verusername();
-    //str的值复制到table结构体中，用户名复制到sender中
+    if(verusername(username, pmail))
+    {
+        perror("verusername error");
+        close(sockfd);
+        return -1;
+    }
+
+    //username的值复制到table结构体中的username
+    strncpy(pmail->username, username, strlen(username));
     return 0;
 }
 
-int getpass_pop(int sockfd, struct table *p)
+int getpass_pop(int sockfd, struct table *pmail)
 {
-
     //参数判断
+    if(sockfd < 3 || NULL == pmail)
+    {
+        perror("getuser_pop error");
+        return -1;
+    }
+
     //从sockfd接收数据，存入buf
+    char buf[128] = "";
+    int len = read(sockfd, buf, sizeof(buf)-1);
+
     //判断接收到的数据是否为空，无数据继续接收，不为空就继续下面步骤
-    //查找USER之后的用户名存入str
-    //进行用户名验证
-    //verpassword();
-    //str的值复制到table结构体中
+    while(len < 1)
+    {
+        len = read(sockfd, buf, sizeof(buf)-1);
+    }
+    buf[len-2] = 0;
+
+    //将接收到的buf解码
+    char *str = base64_decode(buf);
+
+    //查找PASS之后的用户名存入str
+    char *start = strstr(str, "PASS");
+    char password[10] = "";
+    if(NULL == start)
+    {
+        perror("getuserpass error");
+        return -1;
+    }
+    else
+    {
+        char *end = strstr(start+1, "\r\n");
+        //将用户名存入password
+        int lenpass = end - start - 1;
+        strncpy(password, start+1, lenpass);
+    }
+
+    //进行用户密码验证
+    if(verpassword(password, pmail))
+    {
+        perror("verusername error");
+        close(sockfd);
+        return -1;
+    }
+    //password的值复制到table结构体中
+    strncpy(pmail->password, password, strlen(password));
     return 0;
 }

@@ -14,6 +14,9 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <unistd.h>
+
+static char subject_data[128] = "";
 
 /* ***************************************************************
  * Summary: 主题字控制
@@ -23,8 +26,24 @@
  * Others:
  * ***************************************************************/
 int subjectcontrol(const struct mail *pmail, struct subject_ctl *subject);
+
+/* ***************************************************************
+ * Summary: 更新程序控制
+ * Parameters: 邮件结构体 subject_ctl结构体
+ * Calls:
+ * Return: 成功返回0 失败返回-1
+ * Others:
+ * ***************************************************************/
 int emitupdate(const struct mail *pmail, struct subject_ctl *subject);
-int emitcommand(struct subject_ctl *subject);
+
+/* ***************************************************************
+ * Summary: 命令字控制
+ * Parameters: subject_ctl结构体
+ * Calls:
+ * Return: 成功返回0 失败返回-1
+ * Others:
+ * ***************************************************************/
+int emitcommand(const struct mail *pmail, struct subject_ctl *subject);
 
 /* ***************************************************************
  * Summary: 获取创建的邮件名
@@ -51,6 +70,6 @@ char *getsendmailname(const char *username, char *mailname);
  * Return: 成功返回 失败返回
  * Others: 根据控制结果组装邮件按照mail.doc文件格式。strcat(),sprintf()
  * ***************************************************************/
-int createmail(const struct mail *pmail, struct subject_ctl *subject);
+int createmail(const struct mail *pmail, const char *mailname);
 
 #endif

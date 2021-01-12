@@ -115,23 +115,54 @@ int handleconnection(int sockfd, struct mail *pmail)                      //SMTP
 
 int pop3Connection(int sockfd, struct subject_ctl *subject, mail_t *pmail)   //pop3锁步
 {
-    //建立套接字Socket 端口110套接字的建立
+    if(sockfd < 2 || NULL == pmail || NULL == subject)
+    {
+        perror("pop3Connection error");
+        return -1;
+    }
 
-    //等待Client连接请求
+    //读取sockfd的内容
+    char buf[1024] = {0};
+
+    char *pop3_server = "+OK pop3 mail server ready\r\n";
+    char *pop3_ok = "+OK\r\n";
+    char *pop3_stat = "+OK 1 300\r\n";
+    char *pop3_list = "+OK 1 message\r\n1 300 \r\n.\r\n";
+    char *pop3_retr = "+OK 120 octets\r\n";
 
     //Sever发送字符命令： +OK
-
-    //Client发送应答
+    write(sockfd, pop3_server, strlen(pop3_server));
 
     //调用getusre_pop() 截取用户邮箱名，成功调用verusername()函数验证用户名
+    table_t table = {};
+    bzero(&table, sizeof(table));
+    if(getuser_pop(sockfd, &table))
+    {
+        perror("name error");
+        close(sockfd);
+        return -1;
+    }
 
     //Server发送字符命令
-
-    //Client发送 ： PASS
-
+    write(sockfd, pop3_ok, strlen(pop3_ok));
     //调用getPass() 截取密码，成功后进行密码验证
+    if(getpass_pop(sockfd, &table))
+    {
+        perror("pass error");
+        close(sockfd);
+        return -1;
+    }
 
+    strcpy(pmail->filename, table.username);
     //Server发送字符命令+OK\r\n
+    write(sockfd, pop3_ok, strlen(pop3_ok));
+    read(sockfd, buf, sizeof(buf)-1);
+    if(strncmp(buf, "STAT", 4))
+    {
+        perror("STAT error");
+        close(sockfd);
+        return -1;
+    }
 
     //接收并判断Client发送 STAT
 

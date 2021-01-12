@@ -7,17 +7,27 @@
 
 #include "devicereponse.h"
 
-int sendemail(int cfd, const struct mail *pmail, const struct subject_ctl *subject)
+int sendemail(int sockfd, const char *mailname)
 {
-    //从pmail中获取接收方地址作为发送方地址
-    //从pmail中获取发送方地址作为接收方地址
-    //从filename的命名管道中读取subject    _ctl结构体的信息存入subject,
-    //判断subject
-    //subject.result == 0
-    //subject.result == -1
-    //getcurrtime()获取更新时间
-    //将上述内容上按照附带的回复邮件格式连接buf中
-    //将buf中的内容发送sockfd，成功返回0 失败结束进程
+    if(sockfd < 3 || mailname == NULL)
+    {
+        perror("sendemail error");
+        return -1;
+    }
+
+    int fp = open(mailname, O_RDONLY);
+    if(fp < 0)
+    {
+        perror("open error");
+        return -1;
+    }
+
+    char buf[1024] = "";
+    read(fp, buf, sizeof(buf));
+    write(sockfd, buf, strlen(buf));
+
+    close(fp);
+    unlink(mailname);
     return 0;
 }
 

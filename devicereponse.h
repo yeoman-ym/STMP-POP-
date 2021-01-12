@@ -11,6 +11,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 /* ***************************************************************
  * Summary: 发送回复邮件
@@ -19,7 +26,7 @@
  * Return:
  * Others:
  * ***************************************************************/
-int sendemail(int cfd, const struct mail *pmail, const struct subject_ctl *subject);
+int sendemail(int sockfd, const char *mailname);
 
 /* ***************************************************************
  * Summary: 获得当前时间

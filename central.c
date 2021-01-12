@@ -25,7 +25,7 @@ int main()
     struct sockaddr_in saddr = {};
     saddr.sin_family = AF_INET;
     saddr.sin_port = htons(10000);
-    saddr.sin_addr.s_addr = inet_addr("192.168.37.132");
+    saddr.sin_addr.s_addr = inet_addr("192.168.2.151");    //客户端ip地址(ubuntu)
 
     if(bind(sid, (struct sockaddr *)&saddr, sizeof(saddr)))
     {
@@ -61,10 +61,12 @@ int main()
     subjectcontrol(mail, &ctrl);
 
     //获取新建邮件文件名
-    getcreatemailname();
+    char *filename = mail->filename;
+    char filedata[128] = "";
+    getcreatmailname(filename, filedata);
 
     //组装邮件并写入邮件名
-    createmailname();
+    createmail(mail, filedata);
 
     //建立pop3套接字
 
@@ -74,4 +76,7 @@ int main()
 
     free(mail);
     mail = NULL;
+
+    close(sid);
+    return 0;
 }
