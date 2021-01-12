@@ -1,12 +1,19 @@
 #ifndef DEVICECONTROL_H
 #define DEVICECONTROL_H
 
+#include <stdio.h>
+#include <string.h>
+#include "common.h"
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+
 /* ***************************************************************
- * Summary: SMTP协议通信、接收邮件
- * Parameters: socket套接字，邮件结构体指针
- * Calls: welcome_admin_menu(), welcome_stu_menu()
- * Return: 接收成功返回0 失败返回-1
- * Others: 通过SMTP建立Server与Client之间的连接，接收客户端的邮件。
+ * Summary: 主题字控制
+ * Parameters: 邮件结构体 subject_ctl结构体
+ * Calls: emitcommand() emitupdate()
+ * Return: 成功返回0 失败返回-1
+ * Others:
  * ***************************************************************/
 int subjectcontrol(const struct mail *pmail, struct subject_ctl *subject);
 int emitupdate(const struct mail *pmail, struct subject_ctl *subject);

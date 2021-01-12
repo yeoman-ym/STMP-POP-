@@ -34,22 +34,30 @@ int verpassword(const char * password, struct table *usertable)
 
     return -1;
 }
+
 int parsemail(struct mail * pmail, struct subject_ctl * subject)
 {
+    //判断结构体pmail subject是否存在
     if(NULL == pmail || NULL == subject)
         return -1;
 
+    //找到主题字前的位置
     const char *subject1 = "Subject:";
+    //Subject 往后移动9个字符才是主题字的位置
     char *start = strstr(pmail->raw, subject1) + 9;
     if(NULL == start)
         return -1;
+    //找到末尾结束的位置
     char *end = strstr(start, "\r\n") - 1;
     if(NULL == end)
         return -1;
+    //主题字的长度
     int len = end - start + 1;
 
     char buf[128] = "";
+    //主题字放入buf中
     strncpy(buf, start, len);
+    //将buf进行分割
     const char *command = strtok(buf, " ");
     if(NULL == command)
         return -1;

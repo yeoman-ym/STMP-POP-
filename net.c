@@ -106,5 +106,39 @@ int handleconnection(int sockfd, struct mail *pmail)                      //SMTP
     return 0;
 }
 
-int pop3Connection(int cfd, struct subject_ctl *subject, mail_t *pmail);   //pop3锁步
+int pop3Connection(int sockfd, struct subject_ctl *subject, mail_t *pmail)   //pop3锁步
+{
+    //建立套接字Socket 端口110套接字的建立
+
+    //等待Client连接请求
+
+    //Sever发送字符命令： +OK
+
+    //Client发送应答
+
+    //调用getusre_pop() 截取用户邮箱名，成功调用verusername()函数验证用户名
+
+    //Server发送字符命令
+
+    //Client发送 ： PASS
+
+    //调用getPass() 截取密码，成功后进行密码验证
+
+    //Server发送字符命令+OK\r\n
+
+    //接收并判断Client发送 STAT
+
+    //Server发送字符命令：+OK 1 300\r\n
+
+    //接收并判断Client发送请求： LIST
+
+    //Server发送字符命令
+
+    //接收并判断Client请求，RETR 1是则进行一系列步骤
+    //接收并判断Client请求，DELE 1是则进行一系列步骤
+    //接收并判断Client请求，QUIT 1是则进行一系列步骤
+
+    //关闭套接字，返回pop3main中
+    return 0;
+}
 

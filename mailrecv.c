@@ -50,14 +50,14 @@ int getFromAddress(int sockfd, struct mail *pmail)
     //读取数据存入buf中
     read(sockfd, buf, sizeof(buf)-1);
     //从buf中查找<> 中间的数据，找到后就是发送方的地址，作为回复邮件的接收方地址
-    char *start = index(buf, '<');
+    char *start = strstr(buf, '<');
     if(NULL == start)
     {
         perror("index error");
         return -1;
     }
 
-    char *end = index(start+1, '>');
+    char *end = strstr(start+1, '>');
     if(NULL == end)
     {
         perror("index error");
@@ -77,14 +77,14 @@ int getToAddress(int sockfd, struct mail *pmail)
     char buf[128] = "";
     read(sockfd, buf, sizeof(buf)-1);
     //从buf中查找<> 中间的数据，找到后就是发送方的地址，作为回复邮件的接收方地址
-    char *start = index(buf, '<');
+    char *start = strstr(buf, '<');
     if(NULL == start)
     {
         perror("index error");
         return -1;
     }
 
-    char *end = index(start+1, '>');
+    char *end = strstr(start+1, '>');
     if(NULL == end)
     {
         perror("index error");
@@ -128,6 +128,7 @@ int getbody(int sockfd, struct mail *pmail)
         strncpy(pmail->atta, start, len);
     }
 
+    //邮件主体内容不明确
     if(strstr(buf,"\t\n.\r\n") == NULL)
     {
         read(sockfd, buf, sizeof(buf));
@@ -135,6 +136,7 @@ int getbody(int sockfd, struct mail *pmail)
     return 0;
 }
 
+//附件内容与文档叙述不符
 int getslave (int sockfd, struct mail *pmail)
 {
     char buf[MAX_ATTA] = "";
@@ -153,6 +155,7 @@ int getslave (int sockfd, struct mail *pmail)
     if(NULL == end)
     {
         perror("find end error");
+        return -1;
     }
 
     return 0;
@@ -160,9 +163,25 @@ int getslave (int sockfd, struct mail *pmail)
 
 int getuser_pop(int sockfd, struct table *p)           //POP3
 {
+    //参数判断
+    //从sockfd接收数据，存入buf
+    //判断接收到的数据是否为空，无数据继续接收，不为空就继续下面步骤
+    //查找USER之后的用户名存入str
+    //进行用户名验证
+    //verusername();
+    //str的值复制到table结构体中，用户名复制到sender中
     return 0;
 }
+
 int getpass_pop(int sockfd, struct table *p)
 {
+
+    //参数判断
+    //从sockfd接收数据，存入buf
+    //判断接收到的数据是否为空，无数据继续接收，不为空就继续下面步骤
+    //查找USER之后的用户名存入str
+    //进行用户名验证
+    //verpassword();
+    //str的值复制到table结构体中
     return 0;
 }
