@@ -28,7 +28,7 @@ typedef struct subject_ctl
     int result;                 //0表示控制成功，－1表示控制失败
 }ctrl_t;
 
-//登录表结构体
+//验证表结构体
 typedef struct table
 {
     char username[10];          //邮件用户名
