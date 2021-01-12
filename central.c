@@ -10,9 +10,11 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
+#include "devicecontrol.h"
 
 int main()
 {
+    //建立套接字
     int sid = socket(AF_INET, SOCK_STREAM, 0);
     if(sid < 0)
     {
@@ -47,11 +49,28 @@ int main()
         return -1;
     }
 
+    //SMTP锁步 流程接收邮件
     mail_t *mail = (mail_t *)malloc(sizeof(mail_t));
     handleconnection(cid, mail);
 
+    //解析邮件
     struct subject_ctl ctrl = {};
     parsemail(mail, &ctrl);
+
+    //控制设备或更新程序或更新密码文件
+    subjectcontrol(mail, &ctrl);
+
+    //获取新建邮件文件名
+    getcreatemailname();
+
+    //组装邮件并写入邮件名
+    createmailname();
+
+    //建立pop3套接字
+
+
+    //POP3流程回复邮件
+    pop3Connection(cid, &ctrl, mail);
 
     free(mail);
     mail = NULL;
