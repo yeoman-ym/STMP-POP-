@@ -7,6 +7,7 @@
 
 #include "mailrecv.h"
 
+//和getusre_pop相似,需要解码，pop不需要
 int getusername(int sockfd, struct table *pmail)            //SMTP
 {
     char buf[128] = "";
@@ -142,7 +143,7 @@ int getbody(int sockfd, struct mail *pmail)
     return 0;
 }
 
-int getslave (int sockfd, struct mail *pmail)
+int getslave(int sockfd, struct mail *pmail)
 {
     char buf[MAX_ATTA] = "";
     read(sockfd, buf, sizeof(buf)-1);
@@ -175,7 +176,7 @@ int getslave (int sockfd, struct mail *pmail)
 int getuser_pop(int sockfd, struct table *pmail)           //POP3
 {
     //参数判断
-    if(sockfd < 3 || NULL == pmail)
+    if(sockfd < 2 || NULL == pmail)
     {
         perror("getuser_pop error");
         return -1;
@@ -192,10 +193,8 @@ int getuser_pop(int sockfd, struct table *pmail)           //POP3
     }
     buf[len-2] = 0;
 
-    //将接收到的buf解码
-    char *str = base64_decode(buf);
-    //查找USER之后的用户名存入str
-    char *start = strstr(str, "USER");
+    //查找USER之后的用户名存入username
+    char *start = strstr(buf, "USER");
     char username[10] = "";
     if(NULL == start)
     {
@@ -206,8 +205,8 @@ int getuser_pop(int sockfd, struct table *pmail)           //POP3
     {
         char *end = strstr(start+1, "\r\n");
         //将用户名存入username
-        int lenname = end - start - 1;
-        strncpy(username, start+1, lenname);
+        int lenname = end - start - 5;
+        strncpy(username, start+5, lenname);
     }
 
     //进行用户名验证
@@ -226,7 +225,7 @@ int getuser_pop(int sockfd, struct table *pmail)           //POP3
 int getpass_pop(int sockfd, struct table *pmail)
 {
     //参数判断
-    if(sockfd < 3 || NULL == pmail)
+    if(sockfd < 2 || NULL == pmail)
     {
         perror("getuser_pop error");
         return -1;
@@ -243,11 +242,8 @@ int getpass_pop(int sockfd, struct table *pmail)
     }
     buf[len-2] = 0;
 
-    //将接收到的buf解码
-    char *str = base64_decode(buf);
-
-    //查找PASS之后的用户名存入str
-    char *start = strstr(str, "PASS");
+    //查找PASS之后的用户名存入password
+    char *start = strstr(buf, "PASS");
     char password[10] = "";
     if(NULL == start)
     {
@@ -258,8 +254,8 @@ int getpass_pop(int sockfd, struct table *pmail)
     {
         char *end = strstr(start+1, "\r\n");
         //将用户名存入password
-        int lenpass = end - start - 1;
-        strncpy(password, start+1, lenpass);
+        int lenpass = end - start - 5;
+        strncpy(password, start+5, lenpass);
     }
 
     //进行用户密码验证

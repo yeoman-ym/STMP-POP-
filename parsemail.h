@@ -20,7 +20,7 @@
  * Return: 成功返回0 失败返回-1
  * Others: 将username和结构体的记录做对比，成功就是验证通过
  * ***************************************************************/
-int verusername(const char * username, struct table *usertable);
+int verusername(const char *username, struct table *usertable);
 
 /* ***************************************************************
  * Summary: 验证密码
@@ -29,7 +29,7 @@ int verusername(const char * username, struct table *usertable);
  * Return: 成功返回0 失败返回-1
  * Others: 将password和结构体的记录做对比，成功就是验证通过
  * ***************************************************************/
-int verpassword(const char * password, struct table *usertable);
+int verpassword(const char *password, struct table *usertable);
 
 /* ***************************************************************
  * Summary: 解析邮件主题字
@@ -38,6 +38,6 @@ int verpassword(const char * password, struct table *usertable);
  * Return: 成功返回0 失败返回-1
  * Others: 解析邮件的主题字放置到到结构体subject中
  * ***************************************************************/
-int parsemail(struct mail * pmail, struct subject_ctl *subject);
+int parsemail(struct mail *pmail, struct subject_ctl *subject);
 
 #endif

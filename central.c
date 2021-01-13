@@ -68,9 +68,6 @@ int main()
     //组装邮件并写入邮件名
     createmail(mail, filedata);
 
-    //建立pop3套接字
-
-
     //POP3流程回复邮件
     pop3Connection(cid, &ctrl, mail);
 

@@ -29,7 +29,7 @@ int subjectcontrol(const struct mail *pmail, struct subject_ctl *subject)
     }
     subject->result = -1;
 
-    //判断subject是否为changeTable
+    //判断subject是否为CHANGETABLE
     if(!strcmp(commandbuf, "CHANGTABLE"))
     {
         if(emitupdate(pmail, subject) < 0)
@@ -245,6 +245,7 @@ int createmail(const struct mail *pmail, const char *mailname)
     strcpy(name, pmail->send);
     char *str = strtok(name, "@");
 
+    //回复邮件的格式
     fprintf(fp, "Message-ID: <001101c93cc4$1ed2ae30$5400a8c0@liuxiao\
             forever>\r\nFrom: \"%s\" <%s>\r\nTo: <%s>\r\nSubject:%s \r\nMIME-Version\
             : 1.0\r\nContent-Type: multipart/alternative; \r\nX-Priority\

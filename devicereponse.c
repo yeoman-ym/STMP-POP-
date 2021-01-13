@@ -9,7 +9,7 @@
 
 int sendemail(int sockfd, const char *mailname)
 {
-    if(sockfd < 3 || mailname == NULL)
+    if(sockfd < 2 || mailname == NULL)
     {
         perror("sendemail error");
         return -1;

@@ -31,7 +31,7 @@ int verusername(const char * username, struct table *usertable)
     fclose(fp);
     return -1;
 }
-int verpassword(const char * password, struct table *usertable)
+int verpassword(const char *password, struct table *usertable)
 {
     if(NULL == password || NULL == usertable)
         return -1;
@@ -42,7 +42,7 @@ int verpassword(const char * password, struct table *usertable)
     return -1;
 }
 
-int parsemail(struct mail * pmail, struct subject_ctl * subject)
+int parsemail(struct mail *pmail, struct subject_ctl * subject)
 {
     //判断结构体pmail subject是否存在
     if(NULL == pmail || NULL == subject)
