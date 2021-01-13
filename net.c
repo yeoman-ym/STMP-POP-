@@ -124,11 +124,11 @@ int pop3Connection(int sockfd, struct subject_ctl *subject, mail_t *pmail)   //p
     //读取sockfd的内容
     char buf[1024] = {0};
 
-    char *pop3_server = "+OK pop3 mail server ready\r\n";
-    char *pop3_ok = "+OK\r\n";
-    char *pop3_stat = "+OK 1 300\r\n";
-    char *pop3_list = "+OK 1 message\r\n1 300 \r\n.\r\n";
-    char *pop3_retr = "+OK 120 octets\r\n";
+    const char *pop3_server = "+OK pop3 mail server ready\r\n";
+    const char *pop3_ok = "+OK\r\n";
+    const char *pop3_stat = "+OK 1 300\r\n";
+    const char *pop3_list = "+OK 1 message\r\n1 300 \r\n.\r\n";
+    const char *pop3_retr = "+OK 120 octets\r\n";
 
     //Sever发送字符命令： +OK
     write(sockfd, pop3_server, strlen(pop3_server));
@@ -156,6 +156,7 @@ int pop3Connection(int sockfd, struct subject_ctl *subject, mail_t *pmail)   //p
     strcpy(pmail->filename, table.username);
     //Server发送字符命令+OK\r\n
     write(sockfd, pop3_ok, strlen(pop3_ok));
+    //接收并判断Client发送 STAT
     read(sockfd, buf, sizeof(buf)-1);
     if(strncmp(buf, "STAT", 4))
     {
@@ -164,19 +165,59 @@ int pop3Connection(int sockfd, struct subject_ctl *subject, mail_t *pmail)   //p
         return -1;
     }
 
-    //接收并判断Client发送 STAT
-
     //Server发送字符命令：+OK 1 300\r\n
-
+    write(sockfd, pop3_stat, strlen(pop3_stat));
     //接收并判断Client发送请求： LIST
+    read(sockfd, buf, sizeof(buf)-1);
+    if(strncmp(buf, "LIST", 4))
+    {
+        perror("LIST error");
+        close(sockfd);
+        return -1;
+    }
 
     //Server发送字符命令
+    write(sockfd, pop3_list, strlen(pop3_list));
+    read(sockfd, buf, sizeof(buf)-1);
 
     //接收并判断Client请求，RETR 1是则进行一系列步骤
+    if(strncmp(buf, "RETE 1", 6))
+    {
+        perror("RETE error");
+        close(sockfd);
+        return -1;
+    }
+
     //接收并判断Client请求，DELE 1是则进行一系列步骤
+    write(sockfd, pop3_retr, strlen(pop3_retr));
+    const char *filename = pmail->filename;
+    char myfile[128] = "";
+
+    //获取发送邮件名
+    getsendmailname(filename, myfile);
+    sendemail(sockfd, myfile);
+    write(sockfd, "\r\n.\r\n", 5);
+    read(sockfd, buf, sizeof(buf)-1);
+    if(strncmp(buf, "DELE 1", 6))
+    {
+        perror("DELE error");
+        close(sockfd);
+        return -1;
+    }
+
     //接收并判断Client请求，QUIT 1是则进行一系列步骤
+    write(sockfd, pop3_ok, strlen(pop3_ok));
+    read(sockfd, buf, sizeof(buf)-1);
+    if(strncmp(buf, "QUIT", 4))
+    {
+        perror("QUIT error");
+        close(sockfd);
+        return -1;
+    }
 
     //关闭套接字，返回pop3main中
+    write(sockfd, pop3_ok, strlen(pop3_ok));
+    close(sockfd);
     return 0;
 }
 
