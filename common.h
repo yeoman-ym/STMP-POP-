@@ -8,6 +8,10 @@
 #ifndef COMMON_H
 #define COMMON_H
 
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+
 #define MAX_MAIL (8 * 1024)     //邮件最大值
 #define MAX_ATTA (7 * 1024)     //附件最小值
 #define USERFILE "table.txt"    //验证表
@@ -41,5 +45,11 @@ typedef struct table
     char username[10];          //邮件用户名-7位用户名
     char password[10];          //用户密码-7位密码
 }table_t;
+
+typedef struct data
+{
+    char ip[16];
+    unsigned short port;
+}data_t;
 
 #endif

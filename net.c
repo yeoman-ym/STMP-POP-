@@ -12,7 +12,7 @@ int handleconnection(int sockfd, struct mail *pmail)                      //SMTP
     if(sockfd < 2 || NULL == pmail)
         return -1;
 
-    const char * response220 = "220 192.168.2.151 ok\r\n";
+    const char * response220 = "220 192.168.2.151 ok\r\n";                //服务器端IP地址
     const char * response250_HELO = "250-192.168.1.113\r\n250-PIPELINING\r\n250-SIZE 52428800\r\n250-AUTH LOGIN PLAIN\r\n250-AUTH=LOGIN\r\n250-MAILCOMPRESS\r\n250 BITMIME\r\n";
     const char * response334_user = "334 VXNlcm5hbWU6\r\n";
     const char * response334_pass = "334 UGFzc3dvcmQ6\r\n";
