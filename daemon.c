@@ -1,3 +1,10 @@
+/**********************************************************************
+ Copyright: HQYJ
+ Author: yeoman
+ Date: 2021-01-11
+ Description: 守护进程实现
+ *********************************************************************/
+
 #include "daemon.h"
 
 int create_daemon(const char *rootdir,mode_t newmode,const void *serverdata,workfun_t serverwork)

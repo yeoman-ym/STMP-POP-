@@ -12,8 +12,8 @@ int main()
 {
     data_t data = {};
     bzero(&data, sizeof(data));
-    strcpy(data.ip, "192.168.2.151");
-    data.port = 10000;
+    strcpy(data.ip, "192.168.2.151");    //服务器IP地址
+    data.port = 10000;                   //服务器端口
 
     create_daemon(".", 0600, &data, create_tcpserver);
     return 0;
