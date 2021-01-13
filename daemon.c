@@ -130,13 +130,7 @@ void *pthread_fun(void *args)
     getcreatmailname(filename, filedata);
 
     //组装邮件并写入邮件名
-    createmail(mail, filedata);
-
-    while(1)
-    {
-        //POP3流程回复邮件
-        pop3Connection(cid, &ctrl, mail);
-    }
+    createmail(mail, &ctrl, filedata);
 
     free(mail);
     mail = NULL;
@@ -145,3 +139,64 @@ void *pthread_fun(void *args)
     close(cid);
     pthread_exit(NULL);
 }
+
+int create_tcpconsum(const void *data)
+{
+    if(NULL == data)
+        return -1;
+
+    data_t *mydata = (data_t *)data;
+    int sid = socket(AF_INET, SOCK_STREAM, 0);
+    if(sid < 0)
+    {
+        perror("socket error");
+        return -1;
+    }
+
+    struct sockaddr_in caddr = {};
+    caddr.sin_family = AF_INET;
+    caddr.sin_port = htons(mydata->port);
+    caddr.sin_addr.s_addr = inet_addr(mydata->ip);
+
+    if(bind(sid, (struct sockaddr *)&caddr, sizeof(caddr)))
+    {
+        perror("bind error");
+        close(sid);
+        return -1;
+    }
+
+    if(listen(sid,10))
+    {
+        perror("listen error");
+        close(sid);
+        return -1;
+    }
+
+    int cid = -1;
+    mail_t *mail = (mail_t*)malloc(sizeof(mail_t));
+    if(NULL == mail)
+    {
+        perror("mail error");
+        return -1;
+    }
+
+    while(1)
+    {
+        cid = accept(sid, NULL, NULL);
+        if(cid < 0)
+        {
+            perror("accept error");
+            close(sid);
+            return -1;
+        }
+        //收邮件，未设置线程分离
+        mail_t *mail = (mail_t*)malloc(sizeof(mail_t));
+        pop3connection(cid, mail);
+    }
+
+    free(mail);
+    mail = NULL;
+    close(sid);
+    return 0;
+}
+

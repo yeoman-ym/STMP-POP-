@@ -32,6 +32,8 @@ int create_daemon(const char *rootdir,mode_t newmode,const void *serverdata,work
 
 int create_tcpserver(const void *data);
 
+int create_tcpconsum(const void *data);
+
 void *pthread_fun(void *args);
 
 #endif

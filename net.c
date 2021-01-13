@@ -113,9 +113,9 @@ int handleconnection(int sockfd, struct mail *pmail)                      //SMTP
     return 0;
 }
 
-int pop3Connection(int sockfd, struct subject_ctl *subject, mail_t *pmail)   //pop3锁步
+int pop3connection(int sockfd, mail_t *pmail)   //pop3锁步
 {
-    if(sockfd < 2 || NULL == pmail || NULL == subject)
+    if(sockfd < 2 || NULL == pmail)
     {
         perror("pop3Connection error");
         return -1;

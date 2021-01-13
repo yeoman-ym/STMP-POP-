@@ -120,7 +120,7 @@ int getbody(int sockfd, struct mail *pmail)
     }
 
     //将buf内容存入邮件结构体中
-    strcpy(pmail->raw, buf);
+    strncpy(pmail->raw, buf, strlen(buf));
     //读取附件内容
     char *start = strstr(buf, "filename=");
     if(NULL == start)
@@ -136,7 +136,7 @@ int getbody(int sockfd, struct mail *pmail)
         strncpy(pmail->atta, start + 24, len);
     }
 
-    if(strstr(buf,"\t\n.\r\n") == NULL)
+    if(strstr(buf,"\r\n.\r\n") == NULL)
     {
         read(sockfd, buf, sizeof(buf));
     }

@@ -34,6 +34,6 @@ int handleconnection(int sockfd, struct mail *pmail);
  * Return: 成功返回0 失败返回-1
  * Others: 由于smtp server有处理动作， 监听到共享内存的标志值为1，回复邮件——POP3锁步
  * ***************************************************************/
-int pop3Connection(int cfd, struct subject_ctl *subject, mail_t *pmail);
+int pop3connection(int cf, mail_t *pmail);
 
 #endif

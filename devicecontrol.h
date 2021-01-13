@@ -71,6 +71,6 @@ char *getsendmailname(const char *username, char *mailname);
  * Return: 成功返回 失败返回
  * Others: 根据控制结果组装邮件按照mail.doc文件格式。strcat(),sprintf()
  * ***************************************************************/
-int createmail(const struct mail *pmail, const char *mailname);
+int createmail(const struct mail *pmail, struct subject_ctl *subject, const char *mailname);
 
 #endif

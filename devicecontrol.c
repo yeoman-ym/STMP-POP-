@@ -225,13 +225,20 @@ char *getsendmailname(const char *username, char *mailname)
     return NULL;
 
 }
-int createmail(const struct mail *pmail, const char *mailname)
+int createmail(const struct mail *pmail, struct subject_ctl *subject, const char *mailname)
 {
     if(NULL == pmail || NULL == mailname)
     {
         perror("createmail error");
         return -1;
     }
+
+    memset(subject->command, 0, sizeof(subject->command));
+    const char *start = strstr(pmail->raw, "Subject");
+    const char *end = strstr(start, "\r\n");
+    int len = end - start + 1;
+
+    strncpy(subject->command, start+9, len-9);
 
     FILE *fp = fopen(mailname, "w");
     if(NULL == fp)
@@ -247,11 +254,12 @@ int createmail(const struct mail *pmail, const char *mailname)
 
     //回复邮件的格式
     fprintf(fp, "Message-ID: <001101c93cc4$1ed2ae30$5400a8c0@liuxiao\
-            forever>\r\nFrom: \"%s\" <%s>\r\nTo: <%s>\r\nSubject:%s \r\nMIME-Version\
+            forever>\r\nFrom: \"%s\" <%s>\r\nTo: <%s>\r\nSubject:%s \r\nDate: %sMIME-Version\
             : 1.0\r\nContent-Type: multipart/alternative; \r\nX-Priority\
             : 3..X-MSMail-Priority: Normal\r\nX-Mailer: Microsoft Outlook Express\
             6.00.2900.3138\r\nX-MimeOLE: Produced By Microsoft MimeOLE \
-            V6.00.2900.3198\r\n\r\n",str,pmail->send,pmail->recv,subject_data);
+            V6.00.2900.3198\r\n\r\nThis is response of %s device!\r\n"\
+            ,str,pmail->send,pmail->recv,subject_data, __TIME__, subject->command);
     fclose(fp);
     return 0;
 }
